@@ -50,4 +50,82 @@
  */
 export function createFestivalManager() {
   // Your code here
+
+  let festivals = []
+
+  let festivalNames = new Set()
+
+  const addFestival = (name,date,type) => {
+    //validation
+    if(!name || typeof date !== 'string') return -1
+    if(type !== 'religious' && type !== 'national' && type !== 'cultural') return -1
+    
+    if(!(festivalNames.has(name))){
+      festivalNames.add(name)
+      festivals.push({name,date,type})
+    } else return -1
+
+    return festivals.length
+  }
+
+  const removeFestival = (name) => {
+    if(festivalNames.has(name)){
+       
+      let idxOfToBeDeleted 
+
+       festivals.forEach((festival,idx)=>{
+        if(festival.name === name) idxOfToBeDeleted = idx
+      })
+
+      festivals.splice(idxOfToBeDeleted,1)
+
+      return festivalNames.delete(name)
+    }
+    return false
+  }
+
+  const getAll = ()=>{
+    return [...festivals]
+  }
+
+  const getByType = (type) => {
+    return festivals.filter((festival)=> festival.type===type)
+  };
+
+  const getCount = ()=>{
+    return festivalNames.size
+  }
+
+  const getUpcoming = (currentDate,n=3)=>{
+     if(typeof currentDate !== 'string' || ! Number.isInteger(n) || n <= 0) return []
+
+      //currentDate = Number.parseInt(currentDate.split('-').join(""))
+      let festivalsCopy = [...festivals]
+
+      festivalsCopy.sort((a, b) => {
+        const aDate = Number.parseInt(a.date.split("-").join(""));
+        const bDate = Number.parseInt(b.date.split("-").join(""));
+
+        return aDate - bDate;
+      });
+
+      let counter =0
+
+      const upcomingFests = festivalsCopy.filter((festival)=> {
+         return  ((festival.date >= currentDate) && (counter++ < n))
+      })
+
+    return upcomingFests
+  }
+
+  return {
+    addFestival,
+    removeFestival,
+    getAll,
+    getCount,
+    getUpcoming,
+    getByType
+  }
+
+  
 }
